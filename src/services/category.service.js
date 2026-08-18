@@ -12,7 +12,7 @@ const getAll = async () => {
 };
 
 const getBySlug = async (slug) => {
-    return await prisma.category.findUnique({
+    const category = await prisma.category.findUnique({
         where: { slug },
         select: {
             id: true,
@@ -27,8 +27,7 @@ const getBySlug = async (slug) => {
         throw error;
     }
 
-    return category
-
+    return category;
 };
 
 module.exports = { getAll, getBySlug }

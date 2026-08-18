@@ -20,15 +20,39 @@ model Category {
 }
 
 model Article {
-  id          Int      @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   title       String
   author      String
-  slug        String   @unique
-  content     String   @db.Text
-  thumbnail   String?
-  category    Category @relation(fields: [categoryId], references: [id])
+  slug        String    @unique
+  content     String    @db.Text
+  thumbnail   String?   @db.Text
+  category    Category  @relation(fields: [categoryId], references: [id])
   categoryId  Int
-  createdAt   DateTime @default(now())
-  publishedAt DateTime
-  updatedAt   DateTime @updatedAt
+  comments    Comment[]
+  likes       Like[]
+  createdAt   DateTime  @default(now())
+  publishedAt DateTime  @default(now())
+  updatedAt   DateTime  @default(now()) @updatedAt
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  name      String
+  content   String   @db.Text
+  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  articleId Int
+  createdAt DateTime @default(now())
+
+  @@index([articleId])
+}
+
+model Like {
+  id        Int      @id @default(autoincrement())
+  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  articleId Int
+  ip        String?
+  createdAt DateTime @default(now())
+
+  @@unique([articleId, ip])
+  @@index([articleId])
 }

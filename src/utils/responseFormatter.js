@@ -1,13 +1,13 @@
 const successResponse = (res, data, statusCode = 200) => {
     return res.status(statusCode).json({
-        succes: true,
+        success: true,
         data,
     });
 };
 
 const paginatedResponse = (res, data, meta, statusCode = 200) => {
     return res.status(statusCode).json({
-        succes: true,
+        success: true,
         data,
         meta
     });
@@ -15,7 +15,7 @@ const paginatedResponse = (res, data, meta, statusCode = 200) => {
 
 const errorResponse = (res, message, statusCode = 500) => {
     return res.status(statusCode).json({
-        succes: false,
+        success: false,
         message
     });
 };

@@ -1,6 +1,6 @@
 const prisma = require('../../prisma/client');
 
-const getAll = async ({ page = 1, limit = 10, search, category }) => {
+const getAll = async ({ page = 1, limit = 10, search, category, sort }) => {
     // Konversi ke integer karena query params selalu berupa string
     const pageInt = parseInt(page);
     const limitInt = parseInt(limit);
@@ -21,13 +21,18 @@ const getAll = async ({ page = 1, limit = 10, search, category }) => {
         };
     }
 
+    // Tentukan sort order
+    const orderBy = sort === 'oldest'
+        ? { publishedAt: 'asc' }
+        : { publishedAt: 'desc' };
+
     // Jalankan kedua query secara paralel
     const [articles, total] = await Promise.all([
         prisma.article.findMany({
             where,
             skip,
             take: limitInt,
-            orderBy: { publishedAt: 'desc' },
+            orderBy,
             select: {
                 id: true,
                 title: true,
@@ -41,13 +46,23 @@ const getAll = async ({ page = 1, limit = 10, search, category }) => {
                         slug: true,
                     },
                 },
+                _count: {
+                    select: { likes: true },
+                },
             },
         }),
         prisma.article.count({ where }),
     ]);
 
+    // Transform _count.likes into a flat `likes` field
+    const articlesWithLikes = articles.map((article) => ({
+        ...article,
+        likes: article._count.likes,
+        _count: undefined,
+    }));
+
     return {
-        articles,
+        articles: articlesWithLikes,
         meta: {
             total,
             page: pageInt,
@@ -74,6 +89,9 @@ const getBySlug = async (slug) => {
                     slug: true,
                 },
             },
+            _count: {
+                select: { likes: true },
+            },
         },
     });
 
@@ -83,7 +101,12 @@ const getBySlug = async (slug) => {
         throw error;
     }
 
-    return article;
+    // Transform _count.likes into flat `likes` field
+    return {
+        ...article,
+        likes: article._count.likes,
+        _count: undefined,
+    };
 };
 
 module.exports = { getAll, getBySlug };
