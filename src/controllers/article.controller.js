@@ -3,8 +3,8 @@ const { successResponse, paginatedResponse } = require('../utils/responseFormatt
 
 const getAll = async (req, res, next) => {
     try {
-        const { page, limit, search, category } = req.query;
-        const { articles, meta } = await articleService.getAll({ page, limit, search, category });
+        const { page, limit, search, category, sort } = req.query;
+        const { articles, meta } = await articleService.getAll({ page, limit, search, category, sort });
         return paginatedResponse(res, articles, meta);
     } catch (error) {
         next(error);

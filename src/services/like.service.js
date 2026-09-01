@@ -52,7 +52,8 @@ const toggleLike = async (articleId, ip) => {
 };
 
 /**
- * Get like count for an article
+ * Get like count for an article.
+ * Digunakan secara internal jika diperlukan; tidak diekspos via route saat ini.
  */
 const getCount = async (articleId) => {
     const id = parseInt(articleId);
@@ -61,4 +62,4 @@ const getCount = async (articleId) => {
     return await prisma.like.count({ where: { articleId: id } });
 };
 
-module.exports = { toggleLike, getCount };
+module.exports = { toggleLike };
